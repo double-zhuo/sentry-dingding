@@ -38,9 +38,9 @@ class DingDingPlugin(NotificationPlugin):
         return bool(self.get_option('access_token', project))
 
     def notify_users(self, group, event, *args, **kwargs):
-        self.post_process(group, event, *args, **kwargs)
+        self._post_process(group, event, *args, **kwargs)
 
-    def post_process(self, group, event, *args, **kwargs):
+    def _post_process(self, group, event, *args, **kwargs):
         """
         Process error.
         """
@@ -65,8 +65,10 @@ class DingDingPlugin(NotificationPlugin):
                 )
             }
         }
-        requests.post(
+
+        resp = requests.post(
             url=send_url,
             headers={"Content-Type": "application/json"},
             data=json.dumps(data).encode("utf-8")
         )
+        self.logger.info("send to dingding", extra={"httpcode": resp.status_code, "text": resp.text})
